@@ -59,6 +59,31 @@
                 opacity: 0;
             }
         }
+        
+        /* UPDATED: Styles and animation for flowers on touch/click */
+        .touch-flower {
+            position: absolute;
+            font-size: 2rem;
+            user-select: none;
+            pointer-events: none;
+            animation: pop-up 0.8s ease-out forwards;
+            z-index: 100;
+        }
+
+        @keyframes pop-up {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2) rotate(15deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(0.5) rotate(-15deg);
+                opacity: 0;
+            }
+        }
 
         /* Decorative Pookkalam styles */
         .pookkalam {
@@ -86,7 +111,6 @@
         <!-- Header Section -->
         <header class="text-center mb-8">
             <h2 class="text-2xl md:text-3xl font-semibold text-orange-600 font-malayalam">Onam Ashamsakal!</h2>
-            <!-- FIXED: Adjusted font size for better mobile responsiveness -->
             <h1 class="text-2xl sm:text-4xl md:text-6xl font-bold text-yellow-600 mt-2 tracking-wide">🌸 KOOATTATHALLU 2K25 🌸</h1>
             <p class="text-xl md:text-2xl text-green-700 mt-3">@ VM Castle</p>
         </header>
@@ -158,7 +182,7 @@
              <h3 class="text-3xl font-bold text-center text-orange-700 mb-4 font-malayalam">Venue</h3>
              <p class="text-2xl font-semibold text-green-800 mb-4">VM Castle Apartments</p>
              <div class="w-full rounded-lg overflow-hidden shadow-lg border-2 border-yellow-400">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4672.630108724009!2d76.32175259099076!3d10.00050500848427!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080d279cf652a1%3A0x49f772b7d4dc926c!2sV%20M%20Castle%20Apartments!5e0!3m2!1sen!2sin!4v1756278665127!5m2!1sen!2sin" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4672.630108724009!2d76.32175259099076!3d10.00050500848427!2m3!1f0!2f0!3f0!3m2!i1024!2i768!4f13.1!3m3!1m2!1s0x3b080d279cf652a1%3A0x49f772b7d4dc926c!2sV%20M%20Castle%20Apartments!5e0!3m2!1sen!2sin!4v1756278665127!5m2!1sen!2sin" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
              </div>
         </section>
 
@@ -170,39 +194,63 @@
     </main>
 
     <script>
-        // JavaScript for the falling flowers effect
         document.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('flower-container');
             const flowers = ['🌸', '🌺', '🌼', '🏵️', '🌻'];
-            const flowerCount = 30; // Number of flowers to create
+            const flowerCount = 30;
 
+            // --- Logic for falling flowers ---
             for (let i = 0; i < flowerCount; i++) {
                 setTimeout(() => {
-                    createFlower();
-                }, i * 300); // Stagger the creation of flowers
+                    createFallingFlower();
+                }, i * 300);
             }
 
-            function createFlower() {
+            function createFallingFlower() {
                 const flower = document.createElement('div');
                 flower.classList.add('flower');
-                
-                // Select a random flower emoji
                 flower.innerText = flowers[Math.floor(Math.random() * flowers.length)];
-                
-                // Randomize starting position, size, and animation duration
                 flower.style.left = Math.random() * 100 + 'vw';
-                flower.style.animationDuration = (Math.random() * 5 + 5) + 's'; // Duration between 5s and 10s
-                flower.style.fontSize = (Math.random() * 1 + 1) + 'rem'; // Size between 1rem and 2rem
-                
+                flower.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                flower.style.fontSize = (Math.random() * 1 + 1) + 'rem';
                 container.appendChild(flower);
 
-                // Remove the flower from the DOM after the animation completes
                 flower.addEventListener('animationend', () => {
                     flower.remove();
-                    // Create a new flower to maintain the effect
-                    createFlower();
+                    createFallingFlower();
                 });
             }
+
+            // --- UPDATED: Logic for flowers on touch/click ---
+            function createFlowerAtPosition(x, y) {
+                const flower = document.createElement('div');
+                flower.classList.add('touch-flower');
+                flower.innerText = flowers[Math.floor(Math.random() * flowers.length)];
+                
+                // Position the flower at the click/touch coordinates, adjusting for center
+                flower.style.left = (x - 16) + 'px';
+                flower.style.top = (y - 16) + 'px';
+
+                container.appendChild(flower);
+
+                // Remove the flower after its animation ends
+                flower.addEventListener('animationend', () => {
+                    flower.remove();
+                });
+            }
+
+            // Add event listener for mouse clicks
+            document.body.addEventListener('mousedown', (e) => {
+                createFlowerAtPosition(e.clientX, e.clientY);
+            });
+
+            // Add event listener for touch events
+            document.body.addEventListener('touchstart', (e) => {
+                // Create a flower for each touch point
+                for (let i = 0; i < e.touches.length; i++) {
+                    createFlowerAtPosition(e.touches[i].clientX, e.touches[i].clientY);
+                }
+            });
         });
     </script>
 
